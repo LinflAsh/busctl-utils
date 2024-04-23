@@ -7,44 +7,44 @@ function display_one_line {
     printf "%-20s  %-50s\n" "$1" "$2"
 }
 
-# Function to display usage information
 function display_usage {
     echo "用于生成DBUS message的匹配规则,以在支持DBUS通信的系统中,筛选DBUS message"
     echo "用法: gwbusctl monitor [options]"
-    echo "如果每提供任何Options,进入命令行交互模式."
+    echo "如果没提供任何Options,进入命令行交互模式."
     echo "Options:"
     echo "  -h, --help        展示帮助信息"
     echo ""
     echo "匹配规则:"
-    display_one_line "参数"           "规则"
+    display_one_line "参数"            "规则"
     echo "-"
     display_one_line "type"           "匹配 messages 类型."
     display_one_line "sender"         "匹配指定的 messages 发送者."
     display_one_line "destination"    "匹配指定的 messages 接受者."
     display_one_line "path"           "匹配发往指定 object(method_call) 或从指定 object 发出(signal) 的 messages."
-
+    echo ""
     display_one_line "interface"      "匹配发往指定 interface(method_call) 或从指定 interface 发出的(signal) 的 messages."
     display_one_line ""               "如果一条 message header 中省去了 interface 字段, 该 message 将无法匹配任何包含了这条匹配规则的监听."
-
+    echo ""
     display_one_line "member"         "匹配拥有指定的 method 或者 signal 的 messages."
-
+    echo ""
     display_one_line "path_namespace" "匹配发往指定 object(method_call) 或从指定 object发出(signal) 的 messages."
     display_one_line ""               "相比较 path 参数, 还可以匹配指定路径的子路径. 例如, path_namespace='/com/example/foo' 可以匹配"
     display_one_line ""               "/com/example/foo 或者 /com/example/foo/bar, 但不能匹配 /com/example/foobar."
     display_one_line ""               "不能同时使用path和path_namespace一起作为匹配规则."
-
+    echo ""
     display_one_line "arg[0,1,2...]"  "匹配 message body 参数序号、参数值符合条件的 messages. 只有STRING类型的参数才能以这种方式匹配."
     display_one_line ""               "参数匹配的一个例子是arg3='Foo'.只应接受0到63之间的参数索引."
-
+    echo ""
     display_one_line "arg[0,1,2...]path" "兼容arg[0,1,2...]的功能."
     display_one_line ""               "此外,当匹配规则中给定的字符串或相应的message arg以"/"结尾并且是另一个的前缀时,也存在匹配."
     display_one_line ""               "例如:arg0path="/aa/bb/", 这将匹配到第一个参数为"/","aa/","/aa/bb/","/aa/bb/cc/"和"/aa/bb/cc"的messages."
     display_one_line ""               "它将不匹配第一个参数为"/aa/b","/aa"甚至"/aa/bb"的message."
-
+    echo ""
     display_one_line "arg0namespace"  "匹配第一个参数为STRING类型, 并且参数值是指定 namespace 中的总线名称或接口名称的 message."
     display_one_line ""               "这主要用于观察一组相关总线的名称变更,而不是单个名称或所有名称更改."
     display_one_line ""               "例如,匹配规则 member="NameOwnerChanged",arg0namespace="com.example.backend1"匹配总线名称变更,"
     display_one_line ""               "例如com.example.backend1.foo、com.example.baackend1.foo.bar和com.example.bankend1本身."
+    echo ""
 }
 
 function display_params_table {
@@ -62,6 +62,7 @@ function display_params_table {
     display_one_line "9/arg[0,1,2...]path"  "Any string"
     display_one_line "10/arg0namespace"     "Any string"
     echo "---------------------------------------------------------------------"
+    echo ""
 }
 
 function select_params {
@@ -175,19 +176,17 @@ function input_params {
             *) echo "无效的参数选择"; exit 1;;
         esac
     done
-
-    echo "${match_param_values[type]}"
 }
 
 function construct_match {
     match=""
-    echo "${match_param_values[type]}"
     for key in "${!match_param_values[@]}"; do
         match+="$key='${match_param_values[$key]}',"
     done
 }
 
 function start_monitor {
+    echo ""
     echo "调用busctl monitor命令:"
     echo "busctl monitor --match=$match"
     busctl monitor --match="$match"
